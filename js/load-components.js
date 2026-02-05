@@ -3,16 +3,28 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Tính toán đường dẫn đến includes folder
 	function getIncludesPath() {
 		const path = window.location.pathname;
-		// Nếu đang ở root (index.html hoặc /), dùng đường dẫn tương đối
-		if (path === '/' || path.endsWith('/index.html') || path.endsWith('index.html')) {
+		// Đếm số cấp thư mục con (ví dụ: /articles/file.html = 1 cấp)
+		const depth = (path.match(/\//g) || []).length - 1;
+		
+		// Nếu ở root, dùng đường dẫn tương đối
+		if (depth <= 1) {
 			return 'includes/';
 		}
-		// Nếu đang ở file HTML khác ở root, cũng dùng đường dẫn tương đối
-		if (path.endsWith('.html')) {
-			return 'includes/';
+		
+		// Nếu ở thư mục con, dùng ../ để quay về root
+		return '../'.repeat(depth - 1) + 'includes/';
+	}
+	
+	// Tính toán đường dẫn đến js folder (tương tự)
+	function getJsPath() {
+		const path = window.location.pathname;
+		const depth = (path.match(/\//g) || []).length - 1;
+		
+		if (depth <= 1) {
+			return 'js/';
 		}
-		// Mặc định
-		return 'includes/';
+		
+		return '../'.repeat(depth - 1) + 'js/';
 	}
 
 	// Điều chỉnh các link trong header/footer để hoạt động đúng
@@ -22,6 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		const links = container.querySelectorAll('a[href^="/"]');
 		const currentPath = window.location.pathname;
 		const currentPage = currentPath.split('/').pop().replace('.html', '') || 'index';
+		
+		// Tính độ sâu của thư mục hiện tại
+		const depth = (currentPath.match(/\//g) || []).length - 1;
+		const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
 		
 		links.forEach(link => {
 			const href = link.getAttribute('href');
@@ -33,10 +49,10 @@ document.addEventListener('DOMContentLoaded', function() {
 				// Chuyển sang đường dẫn tương đối với .html
 				if (path === '') {
 					// Trang chủ
-					link.setAttribute('href', 'index.html');
+					link.setAttribute('href', prefix + 'index.html');
 				} else {
 					// Các trang khác
-					link.setAttribute('href', path + '.html');
+					link.setAttribute('href', prefix + path + '.html');
 				}
 			}
 		});
