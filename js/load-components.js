@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		links.forEach(link => {
 			const href = link.getAttribute('href');
-			// Chỉ điều chỉnh các link nội bộ (bắt đầu bằng /)
-			if (href && href.startsWith('/') && !href.startsWith('//')) {
+			// Chỉ điều chỉnh các link nội bộ (bắt đầu bằng /) và chưa có .html ở cuối
+			if (href && href.startsWith('/') && !href.startsWith('//') && !href.endsWith('.html')) {
 				// Loại bỏ dấu / đầu tiên
 				const path = href.substring(1);
 				
@@ -89,5 +89,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		})
 		.catch(error => console.error('Error loading footer:', error));
+
+	// Điều chỉnh các link trong body của trang (sau khi header và footer đã load)
+	setTimeout(function() {
+		adjustLinks(document.body);
+	}, 100);
 });
 
