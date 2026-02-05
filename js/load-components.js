@@ -4,15 +4,18 @@ document.addEventListener('DOMContentLoaded', function() {
 	function getIncludesPath() {
 		const path = window.location.pathname;
 		// Đếm số cấp thư mục con (ví dụ: /articles/file.html = 1 cấp)
+		// Path: /articles/file.html -> có 2 dấu / -> depth = 1
 		const depth = (path.match(/\//g) || []).length - 1;
 		
-		// Nếu ở root, dùng đường dẫn tương đối
-		if (depth <= 1) {
+		// Nếu ở root (depth = 0), dùng đường dẫn tương đối
+		if (depth <= 0) {
 			return 'includes/';
 		}
 		
 		// Nếu ở thư mục con, dùng ../ để quay về root
-		return '../'.repeat(depth - 1) + 'includes/';
+		// depth = 1 -> '../includes/'
+		// depth = 2 -> '../../includes/'
+		return '../'.repeat(depth) + 'includes/';
 	}
 	
 	// Tính toán đường dẫn đến js folder (tương tự)
@@ -20,11 +23,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		const path = window.location.pathname;
 		const depth = (path.match(/\//g) || []).length - 1;
 		
-		if (depth <= 1) {
+		if (depth <= 0) {
 			return 'js/';
 		}
 		
-		return '../'.repeat(depth - 1) + 'js/';
+		return '../'.repeat(depth) + 'js/';
 	}
 
 	// Điều chỉnh các link trong header/footer để hoạt động đúng
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		// Tính độ sâu của thư mục hiện tại
 		const depth = (currentPath.match(/\//g) || []).length - 1;
-		const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
+		const prefix = depth > 0 ? '../'.repeat(depth) : '';
 		
 		links.forEach(link => {
 			const href = link.getAttribute('href');
